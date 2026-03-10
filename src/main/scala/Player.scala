@@ -48,7 +48,15 @@ class PlayerActor () extends Actor{
 
   def receive = {
     case Measure (l) => {
-      println("jouer ici une measure")
+      l.foreach{ case Chord(time,l) => 
+        self ! Chord(time,l)
+      }
+    }
+
+    case Chord(time,l) => {
+      l.foreach{ case Note(p,d,v) => 
+        self ! MidiNote(p,v,d,time)
+      }
     }
     case MidiNote(p,v, d, at) => {
       context.system.scheduler.scheduleOnce ((at) milliseconds) (note_on (p,v,10))
@@ -56,4 +64,3 @@ class PlayerActor () extends Actor{
     }
   }
 }
-
