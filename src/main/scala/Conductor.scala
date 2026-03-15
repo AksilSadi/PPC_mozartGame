@@ -32,7 +32,9 @@ class ConductorActor() extends Actor {
   def receive = {
     case "StartGame" => {
       val (de1, de2) = Conductor.jeterDeuxDes()
-      provider ! GetMeasure(de1 + de2, compteur)
+      val sum = de1 + de2
+      println(s"Le conducteur a jete les des: $de1 et $de2, somme: $sum")
+      provider ! GetMeasure(sum, compteur)
     }
     case Result(value) => {
       println(s"Measure $compteurGeneral est jouee")

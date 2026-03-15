@@ -47,16 +47,12 @@ class PlayerActor () extends Actor{
   device.open()
 
   def receive = {
-    case Measure (l) => {
-      l.foreach{ case Chord(time,l) => 
-        self ! Chord(time,l)
-      }
-    }
-
-    case Chord(time,l) => {
-      l.foreach{ case Note(p,d,v) => 
-        self ! MidiNote(p,v,d,time)
-      }
+    case Measure (chords) => {
+      chords.foreach ( chord => 
+      chord.notes.foreach ( note => 
+        self ! MidiNote (note.pitch, note.vol, note.dur, chord.date)  
+      )
+      )
     }
     case MidiNote(p,v, d, at) => {
       context.system.scheduler.scheduleOnce ((at) milliseconds) (note_on (p,v,10))
